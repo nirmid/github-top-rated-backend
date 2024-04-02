@@ -4,4 +4,5 @@ export type RepoData = {
     stars: number,
     description: string,
     link: string
+    repoId: number
 }

@@ -1,7 +1,15 @@
 import { DataTypes, Optional, Model, InferAttributes, InferCreationAttributes } from "sequelize"
 import { sequelize } from "../util/database";
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+interface UserAttributes {
+    id: number;
+    username: string;
+    password: string;
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+
+class User extends Model<UserAttributes, UserCreationAttributes> {
     public id!: number;
     public username!: string;
     public password!: string;

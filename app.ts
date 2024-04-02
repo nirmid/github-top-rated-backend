@@ -7,13 +7,15 @@ import "./models/assosiaction";
 dotenv.config();
 
 const app: Express = express();
+app.use(express.json());
 app.use("/user",userRoutes);
 
 app.use(
     (error:CustomError,req:Request,res:Response,next:NextFunction) => {
         const status:number = error.satusCode || 500;
          return res.status(status).json({message: error.message});
-    }); // might create new folder for errors
+    });
+
 const port: string = process.env.PORT|| "4000";
 
 sequelize.sync({force: true}).then(() => {

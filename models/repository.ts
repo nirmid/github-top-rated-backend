@@ -1,13 +1,27 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes } from "sequelize"
+import { DataTypes, Model, InferAttributes, InferCreationAttributes, Optional } from "sequelize"
 import { sequelize } from "../util/database";
 
-class Repo extends Model<InferAttributes<Repo>, InferCreationAttributes<Repo>> {
+
+interface RepoAttributes {
+    id: number;
+    fullName: string;
+    language: string;
+    stars: number;
+    description: string;
+    link: string;
+    repoId: number;
+}
+
+interface RepoCreationAttributes extends Optional<RepoAttributes, "id"> {}
+
+class Repo extends Model<RepoAttributes, RepoCreationAttributes> {
     public id!: number;
     public fullName!: string;
     public language!: string;
     public stars!: number;
     public description!: string;
     public link!: string;
+    public repoId!: number;
 }
 
 Repo.init({
@@ -34,6 +48,10 @@ Repo.init({
     },
     link: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    repoId: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 }, {
