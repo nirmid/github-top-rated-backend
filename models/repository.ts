@@ -1,62 +1,70 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, Optional } from "sequelize"
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  Optional,
+} from "sequelize";
 import { sequelize } from "../util/database";
 
-
 interface RepoAttributes {
-    id: number;
-    fullName: string;
-    language: string;
-    stars: number;
-    description: string;
-    link: string;
-    repoId: number;
+  id: number;
+  fullName: string;
+  language: string;
+  stars: number;
+  description: string;
+  link: string;
+  repoId: number;
 }
 
 interface RepoCreationAttributes extends Optional<RepoAttributes, "id"> {}
 
 class Repo extends Model<RepoAttributes, RepoCreationAttributes> {
-    public id!: number;
-    public fullName!: string;
-    public language!: string;
-    public stars!: number;
-    public description!: string;
-    public link!: string;
-    public repoId!: number;
+  public id!: number;
+  public fullName!: string;
+  public language!: string;
+  public stars!: number;
+  public description!: string;
+  public link!: string;
+  public repoId!: number;
 }
 
-Repo.init({
+Repo.init(
+  {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
     fullName: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     language: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     stars: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     description: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     link: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     repoId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    }
-}, {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
     tableName: "repos",
-    sequelize: sequelize
-});
+    sequelize: sequelize,
+  }
+);
 
 export { Repo };
