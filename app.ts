@@ -1,5 +1,6 @@
-import express,{Express,Request,Response,NextFunction } from "express";
-import {userRoutes} from "./routes/user";
+import express, { Express, Request, Response, NextFunction } from "express";
+import { userRoutes } from "./routes/user";
+import { authRoutes } from "./routes/auth";
 import { CustomError } from "./classes/custom_error";
 import dotenv from "dotenv";
 import { sequelize } from "./util/database";
@@ -8,22 +9,27 @@ dotenv.config();
 
 const app: Express = express();
 app.use(express.json());
-app.use("/user",userRoutes);
 
+// routes
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+
+// mian error handling middleware
 app.use(
-    (error:CustomError,req:Request,res:Response,next:NextFunction) => {
-        const status:number = error.satusCode || 500;
-         return res.status(status).json({message: error.message});
-    });
+  (error: CustomError, req: Request, res: Response, next: NextFunction) => {
+    const status: number = error.statusCode || 500;
+    return res.status(status).json({ message: error.message });
+  }
+);
 
-const port: string = process.env.PORT|| "4000";
+// server
+const port: string = process.env.PORT || "4000";
 
-sequelize.sync({force: true}).then(() => {
-    app.listen(port)
-})
-.catch((error: Error) => {
+sequelize
+  .sync({ force: true })
+  .then(() => {
+    app.listen(port);
+  })
+  .catch((error: Error) => {
     console.log(error);
-});
-
-
-
+  });
