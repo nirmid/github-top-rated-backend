@@ -30,6 +30,26 @@ const login = async (
   }
 };
 
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1]; // Bearer, token
+  if (token == null) {
+    const error = new CustomError("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+  jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
+    if (err) {
+      const error = new CustomError("Unauthorized");
+      error.statusCode = 401;
+      throw error;
+    }
+    req.body["userId"] = user;
+    console.log("user", user);
+    next();
+  });
+};
+
 const signupReq = async (
   req: Request,
   res: Response,
@@ -87,4 +107,5 @@ const loginReq = async (
 export const authController = {
   signup,
   login,
+  authenticateToken,
 };

@@ -5,6 +5,7 @@ import { CustomError } from "./classes/custom_error";
 import dotenv from "dotenv";
 import { sequelize } from "./util/database";
 import "./models/assosiaction";
+import { authController } from "./controllers/auth";
 dotenv.config();
 
 const app: Express = express();
@@ -12,9 +13,9 @@ app.use(express.json());
 
 // routes
 app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
+app.use("/user", authController.authenticateToken, userRoutes);
 
-// mian error handling middleware
+// main error handling middleware
 app.use(
   (error: CustomError, req: Request, res: Response, next: NextFunction) => {
     const status: number = error.statusCode || 500;
