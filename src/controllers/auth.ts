@@ -33,7 +33,6 @@ const login = async (
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authenticator"];
   const token = authHeader && (authHeader as string).split(" ")[1]; // Bearer, token
-  console.log("token", token);
   if (token == null) {
     const error = new CustomError("No Token!");
     error.statusCode = 401;
@@ -46,7 +45,6 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
       next(error);
     }
     req.body["userId"] = user;
-    console.log("user", user);
     next();
   });
 };
@@ -57,7 +55,6 @@ const signupReq = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    console.log("req", req.body);
     const { username, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({
@@ -75,7 +72,6 @@ const loginReq = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  console.log(req.body);
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ where: { username } });

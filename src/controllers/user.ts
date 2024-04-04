@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Request, Response, NextFunction } from "express";
-import { RepoData } from "../types/repo_data";
+import { RepoData } from "../types/repoData";
 import { Repo } from "../models/repository";
 import { User } from "../models/user";
 import { UserRepository } from "../models/assosiaction";
@@ -22,7 +22,6 @@ const getFavoriteRepositories = async (
     const repoDataPromises: Promise<RepoData>[] = favoriteRepos.map(
       async (item: any) => {
         const repo = await Repo.findByPk(item.RepoId);
-        console.log(repo);
         return {
           fullName: repo!.fullName,
           language: repo!.language,
@@ -48,8 +47,6 @@ const updateFavoriteRepositories = async (
   try {
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
-    console.log(req.body.userId);
-    console.log(userId);
     for (const repo of favoriteRepos) {
       const databaseRepoId = await Repo.findOne({
         where: { repoId: repo.repoId },
@@ -81,8 +78,6 @@ const removeFavoriteRepositories = async (
   try {
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
-    console.log(req.body.userId);
-    console.log(userId);
     for (const repo of favoriteRepos) {
       const databaseRepoId = await Repo.findOne({
         where: { repoId: repo.repoId },

@@ -27,7 +27,7 @@ app.use(
 );
 
 // server
-const port: string = process.env.PORT || "4000";
+const port: string = process.env.APP_PORT || "4000";
 
 sequelize
   .sync({ force: true })
