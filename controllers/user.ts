@@ -11,17 +11,18 @@ const getFavoriteRepositories = async (
   next: NextFunction
 ) => {
   try {
-    const userId = Number(req.body.user.userId);
+    const userId: number = req.body.userId.user_id;
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     const favoriteRepos = await UserRepository.findAll({
-      where: { userId: userId },
+      where: { UserId: userId },
     });
     const repoDataPromises: Promise<RepoData>[] = favoriteRepos.map(
       async (item: any) => {
-        const repo = await Repo.findByPk(item.repoId);
+        const repo = await Repo.findByPk(item.RepoId);
+        console.log(repo);
         return {
           fullName: repo!.fullName,
           language: repo!.language,
@@ -45,12 +46,16 @@ const updateFavoriteRepositories = async (
   next: NextFunction
 ) => {
   try {
-    const favoriteRepos = req.body.favoriteRepos;
-    const userId: number = req.body.user.userId;
+    const favoriteRepos = req.body.repos;
+    const userId: number = req.body.userId.user_id;
+    console.log(req.body.userId);
+    console.log(userId);
     for (const repo of favoriteRepos) {
-      const repoId = await Repo.findOne({ where: { repoId: repo.repoId } });
-      if (repoId) {
-        await UserRepository.create({ userId: userId, repoId: repoId });
+      const databaseRepoId = await Repo.findOne({
+        where: { repoId: repo.repoId },
+      });
+      if (databaseRepoId) {
+        await UserRepository.create({ UserId: userId, RepoId: databaseRepoId });
       } else {
         const newRepo = await Repo.create({
           fullName: repo.fullName,
@@ -60,7 +65,32 @@ const updateFavoriteRepositories = async (
           link: repo.link,
           repoId: repo.repoId,
         });
-        await UserRepository.create({ userId: userId, repoId: newRepo });
+        await UserRepository.create({ UserId: userId, RepoId: newRepo.id });
+      }
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const removeFavoriteRepositories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const favoriteRepos = req.body.repos;
+    const userId: number = req.body.userId.user_id;
+    console.log(req.body.userId);
+    console.log(userId);
+    for (const repo of favoriteRepos) {
+      const databaseRepoId = await Repo.findOne({
+        where: { repoId: repo.repoId },
+      });
+      if (databaseRepoId) {
+        await UserRepository.destroy({
+          where: { UserId: userId, RepoId: databaseRepoId.id },
+        });
       }
     }
   } catch (error) {
@@ -81,21 +111,44 @@ const getMostStarredRepositories = async (
     const repoData: RepoData[] = getResponse.data.items.map((item: any) => {
       return {
         fullName: item.full_name,
-        language: item.language,
+        language: item.language || "No language specified",
         stars: item.stargazers_count,
         description: item.description,
         link: item.html_url,
         repoId: item.id,
       };
     });
-    return res.status(200).json(repoData);
+    const lastPage = getLastPage(getResponse.headers.link);
+    return res.status(200).json({ repoData: repoData, lastPage: lastPage });
   } catch (error) {
     next(error);
   }
+};
+
+const getLastPage = (header: string): number => {
+  const links = header.split(",");
+
+  // Define a regular expression to extract the page number from each link
+  const pageRegExp = /page=(\d+)/;
+
+  let lastPage;
+
+  // Iterate through each link to find the one with "rel='last'"
+  for (const link of links) {
+    if (link.includes('rel="last"')) {
+      const match = pageRegExp.exec(link);
+      if (match && match[1]) {
+        lastPage = parseInt(match[1]);
+        break;
+      }
+    }
+  }
+  return lastPage!;
 };
 
 export const userController = {
   getFavoriteRepositories,
   updateFavoriteRepositories,
   getMostStarredRepositories,
+  removeFavoriteRepositories,
 };

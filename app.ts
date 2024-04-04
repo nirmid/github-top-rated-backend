@@ -15,6 +15,7 @@ app.use(express.json());
 
 // routes
 app.use("/auth", authRoutes);
+// app.use("/user", userRoutes);
 app.use("/user", authController.authenticateToken, userRoutes);
 
 // main error handling middleware
