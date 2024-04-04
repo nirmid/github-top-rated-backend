@@ -1,6 +1,4 @@
-# Project Name
-
-Github top rated web app - Backend
+# Github Top Rated Webapp - Backend
 
 ## Getting Started
 
