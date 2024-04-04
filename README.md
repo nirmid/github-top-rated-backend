@@ -20,5 +20,4 @@ create .env file inside you will need:
 
 place it inside src folder.
 
-    Run tsc
     Run npm start
