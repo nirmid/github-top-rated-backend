@@ -7,6 +7,9 @@ import { sequelize } from "./util/database";
 import "./models/assosiaction";
 import { authController } from "./controllers/auth";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+
 dotenv.config();
 
 const app: Express = express();
@@ -15,7 +18,6 @@ app.use(express.json());
 
 // routes
 app.use("/auth", authRoutes);
-// app.use("/user", userRoutes);
 app.use("/user", authController.authenticateToken, userRoutes);
 
 // main error handling middleware
@@ -26,6 +28,10 @@ app.use(
   }
 );
 
+//docs
+const swaggerDocument = YAML.load("./src/util/openapi.yaml");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // server
 const port: string = process.env.APP_PORT || "4000";
 
@@ -33,6 +39,7 @@ sequelize
   .sync({ force: true })
   .then(() => {
     app.listen(port);
+    console.log("Server is running on port: " + port);
   })
   .catch((error: Error) => {
     console.log(error);

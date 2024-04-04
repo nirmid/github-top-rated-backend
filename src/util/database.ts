@@ -1,19 +1,13 @@
 import { Sequelize } from "sequelize";
-import dotenv, { parse } from "dotenv";
-dotenv.config();
 
-const password = process.env.PG_PASSWORD;
-const user = process.env.PG_USER;
-const host = process.env.PG_HOST;
-const database = process.env.PG_DATABASE;
-const port = process.env.PG_PORT;
-
-if (!password || !user || !host || !database || !port) {
-    throw new Error("Please provide all the necessary environment variables");
-}
+// for the sake of the exercise and for the convience of the reader, we will use sqlite
+// for real world applications, you should use a real database like postgresql
+// when using a non-in-memory database we would get the following as enviornment variables
+const password = "password";
+const user = "user";
+const database = "database";
 
 export const sequelize = new Sequelize(database, user, password, {
-    host: host,
-    dialect: "postgres",
-    port: parseInt(port),
+  host: "localhost",
+  dialect: "sqlite",
 });

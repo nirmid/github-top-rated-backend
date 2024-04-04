@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  title: Github Top Rated Web App Backend
+  version: 1.0.0
+paths:
+  /auth/login:
+    post:
+      summary: Logs in a user and returns a token and user ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Successful login. Returns a token and user ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  user_id:
+                    type: string
+                    example: "1234567890"
+        '401':
+          description: Unauthorized. A user with this username can't be found or Wrong password!
+  /auth/signup:
+    put:
+      summary: Creates a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '201':
+          description: User account created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User Created!"
+  /user/getFavorites:
+    post:
+      summary: Update favorite repositories
+      description: Update favorite repositories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repos:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RepoData'
+              required:
+                - repos
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+  /user/removeFavorites:
+    put:
+      summary: Remove favorite repositories
+      description: Remove favorite repositories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repos:
+                  type: array
+                  items:
+                    type: number
+              required:
+                - repos
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+  /user/updateFavorites:
+    post:
+      summary: Update favorite repositories
+      description: Update favorite repositories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repos:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RepoData'
+              required:
+                - repos
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+  /user/getMostStarred:
+    get:
+      summary: Get most starred repositories
+      description: Get most starred repositories
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepoData'
+        '401':
+          description: Unauthorized
+components:
+  schemas:
+    RepoData:
+      type: object
+      properties:
+        fullName:
+          type: string
+        language:
+          type: string
+        stars:
+          type: number
+        description:
+          type: string
+        link:
+          type: string
+        repoId:
+          type: number
+      required:
+        - fullName
+        - language
+        - stars
+        - description
+        - link
+        - repoId
+
