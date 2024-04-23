@@ -1,10 +1,4 @@
-import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  Optional,
-} from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../util/database";
 
 interface RepoAttributes {
@@ -67,4 +61,8 @@ Repo.init(
   }
 );
 
-export { Repo };
+const getRepoById = async (repoId: number): Promise<Repo | null> => {
+  return Repo.findByPk(repoId);
+};
+
+export { Repo, getRepoById };
