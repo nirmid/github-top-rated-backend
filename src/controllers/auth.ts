@@ -37,7 +37,7 @@ const authenticateToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers["authenticator"];
+  const authHeader = req.headers["authorization"];
   const token = authHeader && (authHeader as string).split(" ")[1]; // Bearer, token
   if (token == null) {
     const error = new CustomError("No Token!");
