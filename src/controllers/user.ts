@@ -1,9 +1,7 @@
 import axios from "axios";
 import { Request, Response, NextFunction } from "express";
 import { RepoData } from "../types/repoData";
-import { Repo } from "../models/repository";
-import { User } from "../models/user";
-import { UserRepository } from "../models/assosiaction";
+import { UserServices } from "../service/user";
 
 const getFavoriteRepositories = async (
   req: Request,
@@ -12,28 +10,8 @@ const getFavoriteRepositories = async (
 ) => {
   try {
     const userId: number = req.body.userId.user_id;
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const favoriteRepos = await UserRepository.findAll({
-      where: { UserId: userId },
-    });
-    const repoDataPromises: Promise<RepoData>[] = favoriteRepos.map(
-      async (item: any) => {
-        const repo = await Repo.findByPk(item.RepoId);
-        return {
-          fullName: repo!.fullName,
-          language: repo!.language,
-          stars: repo!.stars,
-          description: repo!.description,
-          link: repo!.link,
-          repoId: repo!.repoId,
-        };
-      }
-    );
-    const repoData: RepoData[] = await Promise.all(repoDataPromises);
-    return res.status(200).json(repoData);
+    const favoriteRepos = await UserServices.getFavoriteRepositories(userId);
+    return res.status(200).json(favoriteRepos);
   } catch (error) {
     next(error);
   }
@@ -47,24 +25,7 @@ const updateFavoriteRepositories = async (
   try {
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
-    for (const repo of favoriteRepos) {
-      const databaseRepoId = await Repo.findOne({
-        where: { repoId: repo.repoId },
-      });
-      if (databaseRepoId) {
-        await UserRepository.create({ UserId: userId, RepoId: databaseRepoId });
-      } else {
-        const newRepo = await Repo.create({
-          fullName: repo.fullName,
-          language: repo.language,
-          stars: repo.stars,
-          description: repo.description,
-          link: repo.link,
-          repoId: repo.repoId,
-        });
-        await UserRepository.create({ UserId: userId, RepoId: newRepo.id });
-      }
-    }
+    await UserServices.updateFavoriteRepositories(favoriteRepos, userId);
   } catch (error) {
     next(error);
   }
@@ -78,16 +39,7 @@ const removeFavoriteRepositories = async (
   try {
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
-    for (const repo of favoriteRepos) {
-      const databaseRepoId = await Repo.findOne({
-        where: { repoId: repo.repoId },
-      });
-      if (databaseRepoId) {
-        await UserRepository.destroy({
-          where: { UserId: userId, RepoId: databaseRepoId.id },
-        });
-      }
-    }
+    await UserServices.removeFavoriteRepositories(favoriteRepos, userId);
   } catch (error) {
     next(error);
   }
