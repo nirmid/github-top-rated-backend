@@ -26,6 +26,7 @@ const updateFavoriteRepositories = async (
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
     await UserServices.updateFavoriteRepositories(favoriteRepos, userId);
+    return res.status(200).json({ message: "Favorites updated!" });
   } catch (error) {
     next(error);
   }
@@ -40,6 +41,7 @@ const removeFavoriteRepositories = async (
     const favoriteRepos = req.body.repos;
     const userId: number = req.body.userId.user_id;
     await UserServices.removeFavoriteRepositories(favoriteRepos, userId);
+    return res.status(200).json({ message: "Favorites removed!" });
   } catch (error) {
     next(error);
   }
